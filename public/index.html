@@ -1,0 +1,578 @@
+<!-- PART 1: head assets, fonts, hand-written CSS (zero frameworks) -->
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+
+
+
+
+
+<!-- PART 2: app shell, home view, booking views -->
+<div id="app" class="mx-auto mw480 min-h-screen bg-canvas relative">
+  <!-- screens container (scrolls above tab bar) -->
+  <main id="screens" class="pb-40">
+
+    <!-- ============ HOME ============ -->
+    <section id="view-home" data-view>
+      <header class="px-4 pt-4">
+        <div class="flex items-center justify-between gap-2">
+          <button id="areaPill" class="glasspill flex items-center gap-1.5 f13 font-bold px-3 py-2 mh44" aria-label="Change your area">
+            <svg class="w-4 h-4 text-impact-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <span id="areaPillText">Accra, Ghana</span>
+            <svg class="w-3.5 h-3.5 soft" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+         <div class="flex items-center gap-2">
+           <button id="seniorToggle" class="switch" role="switch" aria-checked="false" aria-label="Senior and easy view"></button>
+            <button id="avatarBtn" data-goto="account" class="avatarbtn" aria-label="Sign in with Google" style="background:#fff;border:1px solid #E7EBF2;"><svg class="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg></button>
+          </div>
+        </div>
+        <p id="homeDate" class="f12 soft mt-3">Today</p>
+        <h1 class="font-serifd f30 leading-tight"><span id="homeGreet">Good Morning,</span><br>Friend</h1>
+        <div class="glasscard mt-3 p-4" id="homeHero">
+          <p class="font-display font-extrabold f17">What's wrong?</p>
+          <p class="f12 soft">Tell us what's happening and AI will help</p>
+          <textarea id="homeSymptom" rows="2" placeholder="My AC is running but isn't cooling..." class="field mt-2 w-full p-3 f14 placeholder:text-slate-400"></textarea>
+          <div class="flex items-center justify-between mt-2">
+            <button id="exampleBtn" class="plusbtn" aria-label="Fill in an example">+</button>
+            <button id="aiWriteBtn" class="writepill">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.7 4.6L18 9.3l-4.3 1.7L12 15.6l-1.7-4.6L6 9.3l4.3-1.7z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+              Write with AI
+            </button>
+          </div>
+          <button id="describeBtn" class="btn-dark mt-2 w-full font-display font-bold f15 rounded-2xl py-4 mh56">Describe Your Problem</button>
+        </div>
+      </header>
+
+      <div id="activeBanner" class="px-4 mt-3" hidden>
+        <button id="activeBannerBtn" class="w-full text-left bg-white border border-line rounded-2xl shadow-card p-3 flex items-center gap-3">
+          <span class="live-dot"></span>
+          <span class="flex-1 min-w-0">
+            <span id="activeBannerText" class="block font-display font-bold f14 truncate">Technician is on the way</span>
+            <span class="block f12 text-ink-soft">Tap to open live tracking</span>
+          </span>
+          <svg class="w-5 h-5 text-trust" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      <div class="px-4 mt-5" id="quickWrap">
+        <div class="flex items-end justify-between px-1">
+          <h2 class="font-display font-extrabold f16">Quick Services</h2>
+          <button id="seeAllBtn" class="f12 font-bold soft mh44 px-2">See all</button>
+        </div>
+        <div class="grid grid-cols-3 gap-2 mt-2">
+          <button data-start="hvac" class="chipx justify-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M4 6l16 12M20 6L4 18"/></svg>
+            HVAC
+          </button>
+          <button data-start="plumbing" class="chipx justify-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-5"/><path d="M14 4l6 6L9 21H4v-5z"/></svg>
+            Plumbing
+          </button>
+          <button data-start="electrical" class="chipx justify-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>
+            Electrical
+          </button>
+        </div>
+      </div>
+
+      <div class="px-4 mt-4" id="upcomingWrap" hidden>
+        <h2 class="font-display font-extrabold f16 px-1">Upcoming service</h2>
+        <div id="upcomingCard" class="mt-2"></div>
+      </div>
+
+      <div class="px-4 mt-4" id="jobsWrap" hidden>
+        <h2 class="font-display font-extrabold f16 px-1">Open requests near you</h2>
+        <p class="f12 soft px-1">Apply and the customer picks their artisan</p>
+        <div id="jobsList" class="mt-2 space-y-2"></div>
+      </div>
+
+      <div class="px-4 mt-5">
+        <div class="flex items-center justify-between gap-2 px-1">
+          <h2 class="font-display font-extrabold f16">All services</h2>
+        </div>
+        <div class="mt-2 relative">
+          <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input id="searchInput" type="search" placeholder="Search plumber, cleaner, wiring…" class="field w-full pl-10 pr-4 py-3.5 f15 placeholder:text-slate-400" />
+        </div>
+        <div id="catGrid" class="grid grid-cols-3 gap-2 mt-2"></div>
+      </div>
+
+      <div class="px-4 mt-4">
+        <div class="glasscard p-4 flex items-center gap-3">
+          <svg class="w-8 h-8 text-trust flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5z"/><path d="M9 12l2 2 4-4"/></svg>
+          <p class="f13 soft"><span class="font-bold text-ink font-display">Safe Escrow Guarantee.</span> Artisans are paid only after you confirm the work.</p>
+        </div>
+        <button data-goto="privacy" class="mt-2 w-full f12 font-bold text-ink-soft mh44">How we protect your privacy</button>
+      </div>
+    </section>
+
+    <!-- ============ BOOKING STEP 1 ============ -->
+    <section id="view-book1" data-view hidden>
+      <header class="px-4 pt-4">
+        <button class="backBtn flex items-center gap-1 text-ink-soft font-semibold f14 mh44" data-back="home">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Back
+        </button>
+        <p class="f12 font-bold text-trust mt-1 tracking-wide">STEP 1 OF 2 · JOB DETAILS</p>
+        <h2 id="book1Title" class="font-display font-extrabold f22">Book a plumber</h2>
+      </header>
+      <div class="px-4 mt-3 space-y-3">
+        <div id="book1Summary" class="bg-white border border-line rounded-2xl shadow-card p-4"></div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <label class="font-display font-bold f14" for="jobDesc">Describe the problem</label>
+          <textarea id="jobDesc" rows="3" placeholder="e.g. Kitchen sink leaking under the pipe since yesterday…" class="mt-2 w-full rounded-xl border border-line p-3 f15 focus:outline-none focus:ring-2 focus:ring-trust placeholder:text-slate-400"></textarea>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4 space-y-3">
+          <div>
+            <label class="font-display font-bold f14" for="areaSelect">Your area</label>
+            <select id="areaSelect" class="mt-2 w-full rounded-xl border border-line p-3.5 f15 bg-white mh52"></select>
+          </div>
+          <div>
+            <label class="font-display font-bold f14" for="addrInput">Street / landmark</label>
+            <input id="addrInput" placeholder="House 12, Lakeview Estate, Spintex" class="mt-2 w-full rounded-xl border border-line p-3.5 f15 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-trust" />
+          </div>
+          <div>
+            <span class="font-display font-bold f14">Preferred day</span>
+            <input id="dateInput" type="date" class="mt-2 w-full rounded-xl border border-line p-3.5 f15 mh52" />
+          </div>
+          <div>
+            <span class="font-display font-bold f14">Time slot</span>
+            <div id="slotRow" class="mt-2 flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+          </div>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f14">Voice note or photo <span class="text-ink-soft font-body font-normal">(optional)</span></p>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button id="voiceBtn" class="rounded-xl border border-line p-3 flex flex-col items-center gap-1 mh92 justify-center">
+              <span id="voiceIcon" class="w-10 h-10 rounded-full bg-impact-tint grid place-items-center">
+                <svg class="w-5 h-5 text-impact-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
+              </span>
+              <span id="voiceLabel" class="f12 font-bold text-impact-deep bg-impact-tint px-2 py-0.5 rounded-full">Tap to Speak</span>
+              <span id="voiceStatus" class="f11 text-ink-soft">No recording</span>
+            </button>
+            <label for="photoInput" class="rounded-xl border border-line p-3 flex flex-col items-center gap-1 mh92 justify-center cursor-pointer">
+              <span class="w-10 h-10 rounded-full bg-trust-tint grid place-items-center">
+                <svg class="w-5 h-5 text-trust" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </span>
+              <span class="f12 font-bold text-trust bg-trust-tint px-2 py-0.5 rounded-full">Snap a photo</span>
+              <span id="photoStatus" class="f11 text-ink-soft">e.g. the leak</span>
+            </label>
+            <input id="photoInput" type="file" accept="image/*" capture="environment" class="hidden" />
+          </div>
+          <img id="photoPreview" class="mt-2 w-full rounded-xl border border-line" hidden alt="Job photo preview" />
+          <audio id="voicePlayback" class="mt-2 w-full" controls hidden></audio>
+        </div>
+      </div>
+      <!-- fixed bottom action bar -->
+      <div class="fixed bottom-0 inset-x-0 z-30">
+        <div class="mx-auto mw480 px-4 pb-4 safe-bottom fadebar pt-6">
+          <button id="toStep2Btn" class="w-full bg-impact text-white font-display font-extrabold f16 rounded-2xl py-4 mh56 shadow-card">Confirm Booking &amp; Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BOOKING STEP 2 (review & dispatch) ============ -->
+    <section id="view-book2" data-view hidden>
+      <header class="px-4 pt-4">
+        <button class="backBtn flex items-center gap-1 text-ink-soft font-semibold f14 mh44" data-back="book1">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Back
+        </button>
+        <p class="f12 font-bold text-trust mt-1 tracking-wide">STEP 2 OF 2 · REVIEW &amp; DISPATCH</p>
+        <h2 class="font-display font-extrabold f22">Check &amp; dispatch</h2>
+      </header>
+      <div class="px-4 mt-3 space-y-3">
+        <div id="book2Summary" class="bg-white border border-line rounded-2xl shadow-card p-4"></div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f14">Price breakdown</p>
+          <div id="book2Prices" class="mt-2 f14 space-y-1.5"></div>
+          <div class="mt-2 inline-flex items-center gap-1 f11 font-bold text-trust bg-trust-tint px-2.5 py-1 rounded-full">No Hidden Fees</div>
+        </div>
+        <div class="bg-trust-deep text-white rounded-2xl p-4 flex items-center gap-3">
+          <svg class="w-8 h-8 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          <p class="f13h">On confirm, we instantly dispatch the nearest <span class="font-bold">CID-checked artisan</span> and open live tracking.</p>
+        </div>
+      </div>
+      <div class="fixed bottom-0 inset-x-0 z-30">
+        <div class="mx-auto mw480 px-4 pb-4 safe-bottom fadebar pt-6">
+          <button id="dispatchBtn" class="w-full bg-impact text-white font-display font-extrabold f16 rounded-2xl py-4 mh56 shadow-card">Confirm &amp; Dispatch Artisan</button>
+        </div>
+      </div>
+    </section>
+
+<!-- PART 3: AI diagnose, tracking, payment, history views, tab bar, drawers, toast -->
+    <!-- ============ AI ASSISTANT ============ -->
+    <section id="view-diag" data-view hidden>
+      <header class="px-4 pt-4 flex items-center justify-between">
+        <button class="backBtn flex items-center gap-1 text-ink-soft font-semibold f14 mh44" data-back="home" aria-label="Back">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="flex items-center gap-2">
+          <span class="w-9 h-9 rounded-full grid place-items-center flex-none" style="background:#231A13">
+            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.7 4.6L18 9.3l-4.3 1.7L12 15.6l-1.7-4.6L6 9.3l4.3-1.7z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+          </span>
+          <p class="font-display font-extrabold f16">AI Assistant</p>
+        </div>
+        <button id="diagClear" class="w-11 h-11 rounded-full glasspill grid place-items-center font-display font-extrabold f16" aria-label="Start over">…</button>
+      </header>
+      <div id="diagChat" class="px-4 mt-3 space-y-2"></div>
+      <div id="diagChips" class="px-4 mt-2 flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+      <div class="px-4 mt-2">
+        <div id="diagIssue" class="glasscard p-4" hidden></div>
+      </div>
+      <div class="h-24"></div>
+      <div class="fixed inset-x-0 z-30 diagabove">
+        <div class="mx-auto mw480 px-4 pb-4 safe-bottom pt-2">
+          <div class="diagbar flex items-center gap-1 p-1.5 pl-1.5">
+            <button id="diagPlus" class="w-10 h-10 rounded-full grid place-items-center flex-none font-bold soft f20" aria-label="Suggest an example">+</button>
+            <input id="diagInput" placeholder="Ask Anything..." class="flex-1 min-w-0 bg-transparent outline-none f14 py-2.5 placeholder:text-slate-400" />
+            <button id="diagMic" class="w-10 h-10 rounded-full grid place-items-center flex-none" aria-label="Dictate">
+              <svg class="w-5 h-5 soft" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
+            </button>
+            <button id="diagSend" class="w-11 h-11 rounded-full btn-dark grid place-items-center flex-none" aria-label="Send">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-8-8 19-2.5-8.5z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TRACKING ============ -->
+    <section id="view-track" data-view hidden>
+      <header class="px-4 pt-4 flex items-center justify-between">
+        <button class="backBtn flex items-center text-ink-soft font-semibold f14 mh44 w-11" data-back="home" aria-label="Back">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="text-center">
+          <p class="font-display font-extrabold f16">Your Technician</p>
+          <p class="f11 soft" id="trackRef"></p>
+        </div>
+        <a href="tel:0800349548" class="w-11 h-11 rounded-full glasspill grid place-items-center font-display font-extrabold f16" aria-label="Call support">…</a>
+      </header>
+      <div id="trackEmpty" class="px-4 mt-6 text-center" hidden>
+        <p class="font-display font-bold f18">No active job</p>
+        <p class="f14 text-ink-soft mt-1">Book a service and watch your artisan arrive live here.</p>
+        <button class="mt-4 bg-trust text-white font-display font-bold rounded-2xl px-6 py-3.5 mh52" data-goto="home">Browse services</button>
+      </div>
+      <div id="trackBody" class="px-4 mt-3 space-y-3">
+       <div class="bg-ink text-white rounded-2xl p-4 flex items-center gap-3 shadow-card">
+         <span class="live-dot"></span>
+         <p class="font-display font-bold f15 leading-snug" id="liveBanner">LIVE DISPATCH: Emmanuel is on his way!</p>
+       </div>
+        <div id="routeAlert" class="route-alert" hidden>
+          <svg class="w-5 h-5 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+          <span id="routeAlertText">Artisan branched off the planned route — rerouting…</span>
+        </div>
+        <div class="rounded-3xl p-2 glasscard">
+          <div class="relative rounded-2xl overflow-hidden">
+            <svg id="mapSvg" viewBox="0 0 340 210" class="w-full block" aria-label="Live technician map">
+              <rect x="0" y="0" width="340" height="210" rx="16" fill="#FBE9D4"/>
+              <ellipse cx="72" cy="58" rx="48" ry="30" fill="#E1E8F1"/>
+              <ellipse cx="84" cy="52" rx="26" ry="14" fill="#D7E3F2"/>
+              <path d="M268 210 C 260 170, 300 160, 292 128 C 286 104, 310 96, 306 70 L 340 70 L 340 210 Z" fill="#D2E4F0" opacity=".7"/>
+              <g stroke="#FFFFFF" stroke-linecap="round" opacity=".9">
+                <path d="M0 100 H340" stroke-width="7"/>
+                <path d="M0 148 H340" stroke-width="7"/>
+                <path d="M120 0 V210" stroke-width="7"/>
+                <path d="M205 0 V210" stroke-width="7"/>
+                <path d="M0 40 H120" stroke-width="5"/>
+                <path d="M120 148 L205 100 L290 148" stroke-width="5" fill="none"/>
+              </g>
+              <g stroke="#EFD3B4" stroke-width="2">
+                <path d="M0 124 H340"/><path d="M162 0 V210"/><path d="M248 0 V210"/>
+              </g>
+              <g>
+                <circle cx="162" cy="72" r="4" fill="#E11D2E"/>
+                <circle cx="248" cy="124" r="4" fill="#0A7A42"/>
+              </g>
+              <path id="routeCasing" d="M52,168 C82,162 72,132 112,127 C152,122 142,96 182,91 C222,86 242,70 276,46" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" opacity=".95"/>
+              <path id="routePath" d="M52,168 C82,162 72,132 112,127 C152,122 142,96 182,91 C222,86 242,70 276,46" fill="none" stroke="#F97316" stroke-width="4.5" stroke-linecap="round" class="route-anim"/>
+              <g>
+                <circle cx="52" cy="168" r="9" fill="#111827"/>
+                <circle cx="52" cy="168" r="9" fill="none" stroke="#fff" stroke-width="2.5"/>
+                <circle cx="52" cy="168" r="3" fill="#2563EB"/>
+              </g>
+              <g id="carMarker" class="carshadow" transform="translate(52,168)">
+                <circle r="12" fill="#fff"/>
+                <rect x="-8" y="-4.5" width="16" height="9" rx="3" fill="#111827"/>
+                <rect x="-4" y="-6.5" width="8" height="4" rx="1.5" fill="#111827"/>
+                <rect x="3.5" y="-2.5" width="3" height="5" rx="1" fill="#FFD66B"/>
+              </g>
+              <g transform="translate(276,46)">
+                <circle r="14" fill="rgba(249,115,22,.25)">
+                  <animate attributeName="r" values="10;16;10" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <path d="M0,4 C-7,-3 -11,-7 -11,-12 A11,11 0 0 1 11,-12 C11,-7 7,-3 0,4 Z" fill="#111827"/>
+                <circle cy="-12" r="4" fill="#2563EB"/>
+              </g>
+            </svg>
+            <span class="arrival">
+              <span class="block font-bold soft" style="font-size:10px">Arriving</span>
+              <span class="block font-display font-extrabold f14" id="mapEtaMin">12 min</span>
+            </span>
+          </div>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="f12 text-ink-soft font-semibold">ESTIMATED ARRIVAL</p>
+              <p class="font-display font-extrabold f24" id="etaText">In about 15 min</p>
+            </div>
+            <button id="refreshEtaBtn" class="f12 font-bold text-trust border border-trust/30 rounded-full px-3 py-2 mh40">Refresh</button>
+          </div>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-trust flex-none"></span>
+            <div class="route-line flex-1"></div>
+            <svg class="w-5 h-5 text-impact-deep flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-8-8 19-2.5-8.5z"/></svg>
+          </div>
+         <p class="f12h text-ink-soft mt-2" id="routeText">Departing from Spintex Road, Accra</p>
+          <p class="f12 mt-1 flex items-center gap-2"><span id="gpsMeta" class="soft">Live GPS · waiting for signal…</span><span id="offPill" class="offpill live">On route</span></p>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <div class="flex items-center gap-3">
+            <span id="techAvatar" class="w-14 h-14 rounded-full bg-trust-tint text-trust-deep font-display font-extrabold f20 grid place-items-center flex-none">E</span>
+            <div class="flex-1 min-w-0">
+              <p id="techName" class="font-display font-extrabold f16">Emmanuel Mensah</p>
+              <p id="techTitle" class="f13 text-ink-soft">Master Plumber</p>
+              <p class="f13 mt-0.5"><span class="text-impact-deep font-bold">★</span> <span id="techRating" class="font-bold">4.9</span> <span class="text-ink-soft">(<span id="techJobs">142</span> fixes)</span></p>
+            </div>
+            <span class="inline-flex items-center gap-1 f11 font-extrabold text-white bg-trust px-2.5 py-1.5 rounded-full flex-none">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5z"/><path d="M9 12l2 2 4-4"/></svg>
+              CID Checked
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-3">
+            <a id="callTechBtn" href="tel:+233244123456" class="flex items-center justify-center gap-2 bg-trust text-white font-display font-bold f13 leading-tight text-center rounded-2xl px-2 py-3.5 mh52">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.25a2 2 0 0 1 2.1-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.9z"/></svg>
+              Call Now
+            </a>
+            <a id="waTechBtn" href="https://wa.me/233244123456" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 bg-white border-2 border-trust text-trust font-display font-bold f13 leading-tight text-center rounded-2xl px-2 py-3.5 mh52">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 21l2-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+              WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f15 mb-1">Trip progress</p>
+          <div class="relative pl-1">
+            <div class="tl-rail"></div>
+            <div class="tl-fill" id="tlFill" style="height: 40px;"></div>
+            <div id="tlSteps" class="space-y-4"></div>
+          </div>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f14">Need to reschedule or artisan delayed?</p>
+          <p class="f13 text-ink-soft mt-1">Free reschedule up to 2 hours before your slot. Our team can also reassign an artisan.</p>
+          <div class="grid grid-cols-2 gap-2 mt-3">
+            <button id="reschedBtn" class="rounded-2xl border border-line font-bold f14 py-3 mh50">Reschedule</button>
+            <a href="tel:0800349548" class="rounded-2xl border border-line font-bold f14 py-3 mh50 flex items-center justify-center">Call Support</a>
+          </div>
+        </div>
+        <button id="payNowBtn" class="w-full bg-trust text-white font-display font-extrabold f15 rounded-2xl py-4 mh56">Work done? Pay securely now</button>
+        <button id="cancelBtn" class="w-full text-cancel font-bold f14 rounded-2xl py-3.5 mh52 border border-red-200 bg-white">Cancel Booking (Free of charge)</button>
+      </div>
+    </section>
+
+    <!-- ============ PAYMENT ============ -->
+    <section id="view-pay" data-view hidden>
+      <header class="px-4 pt-4">
+        <button class="backBtn flex items-center gap-1 text-ink-soft font-semibold f14 mh44" data-back="track">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Back
+        </button>
+        <h2 class="font-display font-extrabold f22">Secure checkout</h2>
+      </header>
+      <div class="px-4 mt-3 space-y-3">
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <div class="flex items-center justify-between">
+            <p class="font-display font-bold f15">Cost breakdown</p>
+            <span class="f11 font-bold text-trust bg-trust-tint px-2.5 py-1 rounded-full">No Hidden Fees</span>
+          </div>
+          <div id="payLines" class="mt-2 f14 space-y-1.5"></div>
+          <div class="bt-div mt-3 pt-3 flex items-center justify-between">
+            <span class="font-display font-bold f15">Total to pay</span>
+            <span id="payTotal" class="font-display font-extrabold f22 text-trust-deep">GH₵ 0.00</span>
+          </div>
+        </div>
+        <div class="bg-trust-tint border border-trust/25 rounded-2xl p-4 flex items-center gap-3">
+          <svg class="w-9 h-9 text-trust flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.5" fill="currentColor"/></svg>
+          <p class="f13"><span class="font-display font-bold">FixHub Safe Escrow Guarantee.</span> Your money is held safely and released to the artisan only after you confirm the work.</p>
+        </div>
+        <div>
+          <p class="font-display font-bold f15 px-1 mb-2">How do you want to pay?</p>
+          <div class="space-y-2" id="payMethods">
+            <label class="paycard relative flex items-center gap-3 bg-white rounded-2xl p-4 cursor-pointer">
+              <input type="radio" name="paymethod" value="MTN Mobile Money" checked />
+              <span class="w-11 h-11 rounded-full bg-mtn grid place-items-center font-display font-extrabold f13 text-ink flex-none">MTN</span>
+              <span class="flex-1"><span class="block font-display font-bold f15">MTN Mobile Money</span><span class="block f12h text-ink-soft">Approve with your MoMo PIN</span></span>
+            </label>
+            <label class="paycard relative flex items-center gap-3 bg-white rounded-2xl p-4 cursor-pointer">
+              <input type="radio" name="paymethod" value="Telecel Cash" />
+              <span class="w-11 h-11 rounded-full bg-telecel grid place-items-center font-display font-extrabold f11 text-white flex-none">TCL</span>
+              <span class="flex-1"><span class="block font-display font-bold f15">Telecel Cash</span><span class="block f12h text-ink-soft">Approve with your Telecel PIN</span></span>
+            </label>
+            <label class="paycard relative flex items-center gap-3 bg-white rounded-2xl p-4 cursor-pointer">
+              <input type="radio" name="paymethod" value="Cash to Artisan" />
+              <span class="w-11 h-11 rounded-full bg-trust-tint grid place-items-center flex-none">
+                <svg class="w-6 h-6 text-trust" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>
+              </span>
+              <span class="flex-1"><span class="block font-display font-bold f15">Pay Cash to Artisan</span><span class="block f12h text-ink-soft">Pay in person after inspection</span></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="fixed bottom-0 inset-x-0 z-30">
+        <div class="mx-auto mw480 px-4 pb-4 safe-bottom fadebar pt-6">
+          <button id="payBtn" class="w-full bg-impact text-white font-display font-extrabold f16 rounded-2xl py-4 mh56 shadow-card">Pay GH₵0.00 with MTN MoMo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HISTORY ============ -->
+    <section id="view-history" data-view hidden>
+      <header class="px-4 pt-4">
+        <h2 class="font-display font-extrabold f22">My bookings</h2>
+        <p class="f13 text-ink-soft"><span id="backendChip" class="inline-block f11 font-bold bg-slate-200 px-2 py-0.5 rounded-full">Connecting…</span> <span id="histSub">Setting up your backend</span></p>
+      </header>
+      <div class="px-4 mt-3 space-y-3">
+        <div id="activeJobCard"></div>
+        <div id="openWrap" hidden>
+          <p class="font-display font-bold f15 pt-1">Open requests</p>
+          <p class="f12 soft">Artisans apply — pick yours below</p>
+          <div id="openList" class="space-y-2 mt-2"></div>
+        </div>
+        <p class="font-display font-bold f15 pt-1">Past repairs</p>
+        <div id="pastList" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- ============ ACCOUNT (login / profile) ============ -->
+    <section id="view-account" data-view hidden>
+      <header class="px-4 pt-4 flex items-center gap-2">
+        <button class="backBtn flex items-center text-ink-soft font-semibold f14 mh44" data-back="home" aria-label="Back">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div>
+          <h2 class="font-display font-extrabold f22">Account</h2>
+          <p class="f13 soft">Customers book · artisans apply</p>
+        </div>
+      </header>
+      <div class="px-4 mt-3 space-y-3">
+        <div id="acctBody"></div>
+      </div>
+    </section>
+
+    <!-- ============ PRIVACY & DATA SAFETY ============ -->
+    <section id="view-privacy" data-view hidden>
+      <header class="px-4 pt-4 flex items-center gap-2">
+        <button id="privacyBackBtn" class="backBtn flex items-center text-ink-soft font-semibold f14 mh44" aria-label="Back">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div>
+          <h2 class="font-display font-extrabold f22">Privacy & data safety</h2>
+          <p class="f13 soft">How FixHub protects you</p>
+        </div>
+      </header>
+      <div class="px-4 mt-3 space-y-3">
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f15">What we collect</p>
+          <p class="f13 text-ink-soft mt-1">Only what the app needs to work: your Google name and email when you sign in, the booking details you type in, your area or live location when you share it for dispatch, and your trade and service area if you join as an artisan.</p>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f15">What stays on your phone</p>
+          <p class="f13 text-ink-soft mt-1">Your exact street address, voice notes and full job photos never leave this device. Only a small "photo attached" flag syncs so the artisan knows to expect one.</p>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f15">How it is stored</p>
+          <p class="f13 text-ink-soft mt-1">Bookings live in a secured Supabase database with row-level security: you can only read your own bookings, artisans only see open requests, and customers only see applications on their own requests. Nobody can delete records through the app.</p>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f15">Payments</p>
+          <p class="f13 text-ink-soft mt-1">Card and Mobile Money payments open a Paystack secure popup. FixHub never sees or stores your MoMo PIN or card number. Money is held in escrow and released to the artisan only after you confirm the work.</p>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f15">Location & tracking</p>
+          <p class="f13 text-ink-soft mt-1">Live trip progress — map position, arrival time and detour alerts — is shared between you and your artisan or customer only while a job is active.</p>
+        </div>
+        <div class="bg-white border border-line rounded-2xl shadow-card p-4">
+          <p class="font-display font-bold f15">Your choices</p>
+          <p class="f13 text-ink-soft mt-1">Use FixHub as a guest without signing in. Log out any time in Account to clear your session on this phone. To ask for a copy or deletion of your data, call support on <a href="tel:0800349548" class="font-bold text-trust">0800 349 548</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SERVICES (search + browse) ============ -->
+    <section id="view-services" data-view hidden>
+      <header class="px-4 pt-4">
+        <h2 class="font-display font-extrabold f22">Services</h2>
+        <p class="f13 soft" id="svcSub">5 trades · verified pros nearby</p>
+        <div class="mt-2 relative">
+          <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input id="svcSearch" type="search" placeholder="Try 'leak', 'wiring', 'AC'…" class="field w-full pl-10 pr-4 py-3.5 f15 placeholder:text-slate-400" />
+        </div>
+        <div id="svcChips" class="mt-2 flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+      </header>
+      <div class="px-4 mt-2">
+        <div id="svcGrid" class="grid grid-cols-2 gap-2"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- bottom nav: four equal tabs -->
+  <nav id="tabbar" class="fixed bottom-0 inset-x-0 z-40">
+    <div class="mx-auto mw480 px-4 pb-4 safe-bottom tabbar-safe">
+      <div class="navbar grid grid-cols-4 px-2 pt-1.5 pb-2">
+        <button data-goto="home" class="tabbtn on flex flex-col items-center gap-0.5 py-1.5 mh56">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>
+          <span class="f11 font-bold">Home</span>
+        </button>
+        <button data-goto="services" class="tabbtn flex flex-col items-center gap-0.5 py-1.5 mh56">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <span class="f11 font-bold">Search</span>
+        </button>
+        <button data-goto="history" class="tabbtn flex flex-col items-center gap-0.5 py-1.5 mh56">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+          <span class="f11 font-bold">Bookings</span>
+        </button>
+        <button data-goto="diag" class="tabbtn flex flex-col items-center gap-0.5 py-1.5 mh56" aria-label="Chat">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 21l2-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+          <span class="f11 font-bold">Chat</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- cancel confirm drawer -->
+  <div id="cancelDrawer" class="fixed inset-0 z-50" hidden>
+    <div class="absolute inset-0 bg-ink/50" data-close="cancelDrawer"></div>
+    <div class="drawer absolute bottom-0 inset-x-0 mx-auto mw480 bg-white rounded-t-3xl shadow-drawer p-5 safe-bottom">
+      <p class="font-display font-extrabold f18">Cancel this booking?</p>
+      <p class="f14 text-ink-soft mt-1">It's free of charge. The artisan will be released for other jobs.</p>
+      <div class="grid grid-cols-2 gap-2 mt-4">
+        <button class="rounded-2xl border border-line font-bold py-3.5 mh52" data-close="cancelDrawer">Keep booking</button>
+        <button id="confirmCancelBtn" class="rounded-2xl bg-cancel text-white font-display font-bold py-3.5 mh52">Yes, cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- reschedule drawer -->
+  <div id="schedDrawer" class="fixed inset-0 z-50" hidden>
+    <div class="absolute inset-0 bg-ink/50" data-close="schedDrawer"></div>
+    <div class="drawer absolute bottom-0 inset-x-0 mx-auto mw480 bg-white rounded-t-3xl shadow-drawer p-5 safe-bottom">
+      <p class="font-display font-extrabold f18">Reschedule visit</p>
+      <input id="reschedDate" type="date" class="mt-3 w-full rounded-xl border border-line p-3.5 mh52" />
+      <div id="reschedSlots" class="mt-2 flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+      <button id="saveReschedBtn" class="mt-3 w-full bg-trust text-white font-display font-bold rounded-2xl py-3.5 mh52">Save new time</button>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div id="toast" class="fixed left-1/2 -translate-x-1/2 bottom-24 z-50 bg-ink text-white f13h font-semibold px-4 py-3 rounded-2xl shadow-card mw90 transition-opacity" style="opacity:0; pointer-events:none;"></div>
+</div>
+
+<!-- PART 4: app logic A — config, data, backend, router, home -->
+<script src="app.js"></script>
+
+<!-- PART 5: app logic B — booking, tracking, payment, history -->
+<script src="flows.js"></script>

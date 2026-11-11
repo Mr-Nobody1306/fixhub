@@ -1,0 +1,9 @@
+{
+  "name": "fixhub-secure",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FixHub Ghana — secure split frontend/backend. Groq key stays on the server.",
+  "type": "commonjs",
+  "scripts": { "start": "node server.js", "test": "node --test test/" },
+  "engines": { "node": ">=18" }
+}
