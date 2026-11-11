@@ -27,9 +27,10 @@ Render provides an HTTPS service URL after deployment. Confirm that its
 
 ### 3. Configure GitHub Pages
 
-The workflow enables GitHub Pages and deploys through Actions. Add a repository
-Actions variable named `BACKEND_URL` with the Render service's HTTPS origin
-(for example, `https://fixhub-api.onrender.com`, with no path).
+In repository settings, choose **Pages → Build and deployment → GitHub
+Actions**. Add a repository Actions variable named `BACKEND_URL` with the
+Render service's HTTPS origin (for example,
+`https://fixhub-api.onrender.com`, with no path).
 
 The workflow in `.github/workflows/deploy-pages.yml` builds the deployment
 configuration and publishes only `public/`. Pushes to `main` deploy
