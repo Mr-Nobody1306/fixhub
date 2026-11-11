@@ -534,7 +534,8 @@ async function sendDiagServer(text) {
     const timer = setTimeout(function () { ctl.abort(); }, 30000);
     let r;
     try {
-      r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: groqMsgs.slice(-12) }), signal: ctl.signal });
+      const apiBase = publicSetting("apiBaseUrl").replace(/\/+$/, "");
+      r = await fetch(apiBase + "/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: groqMsgs.slice(-12) }), signal: ctl.signal });
     } finally { clearTimeout(timer); }
     if (!r.ok) throw new Error("http-" + r.status);
     const p = await r.json();

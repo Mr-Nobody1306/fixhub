@@ -27,10 +27,15 @@ describe("backend isolation", function () {
       }
     }
   });
-  it("frontend AI traffic goes only to our own /api/chat", function () {
+  it("frontend AI traffic goes only to the configured backend /api/chat", function () {
     const body = read("public/flows.js") + read("public/app.js") + read("public/index.html");
-    assert.match(body, /fetch\(["']\/api\/chat["']/);
+    assert.match(body, /fetch\(apiBase \+ ["']\/api\/chat["']/);
     assert.ok(!/chat\/completions|openai\/v1/i.test(body), "no direct provider URLs in the browser");
+  });
+  it("deployment API config does not default to a local address", function () {
+    const body = read("public/deploy-config.js");
+    assert.match(body, /FIXHUB_API_BASE_URL\s*=\s*["']["']/);
+    assert.doesNotMatch(body, /localhost|127\.0\.0\.1/i);
   });
   it("server-side prompt is not shipped to the browser", function () {
     const pub = read("public/flows.js") + read("public/app.js") + read("public/index.html");
@@ -48,7 +53,8 @@ describe("backend isolation", function () {
     assert.ok(body.indexOf("startsWith(publicDir") !== -1 || body.indexOf("indexOf(publicDir") !== -1, "path traversal guard required");
   });
   it(".env is ignored; the example ships a placeholder, never a key", function () {
-    assert.match(read(".gitignore"), /^\.env$/m);
+    assert.match(read(".gitignore"), /^\.env\*$/m);
+    assert.match(read(".gitignore"), /^!\.env\.example$/m);
     const ex = read(".env.example");
     assert.match(ex, /GROQ_API_KEY=PASTE_YOUR_KEY_HERE/);
     assert.ok(!/gsk_[A-Za-z0-9]/.test(ex), ".env.example must not contain a real key");

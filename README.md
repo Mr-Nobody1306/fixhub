@@ -1,95 +1,55 @@
-# FixHub — Secure deployment (split frontend + backend)
+# FixHub Ghana
 
-The FixHub Ghana app, organized so the Groq key can never be seen or
-taken from the browser — the same split as NetBuddy secure.
+FixHub is split into a static frontend and a small Node.js API. The frontend
+is deployed to GitHub Pages; the API is deployed to Render. The Groq API key
+is stored only as a secret environment variable on the API host.
 
-How the split protects the key:
+## Deploy
 
-  browser --POST /api/chat--> server.js --key attached HERE--> Groq
-    only chat text in,            .env lives on YOUR machine
-    reply+service out             only public/ is ever served
-    NO key in either direction
+### 1. Push this project to GitHub
 
-- server.js + src/*.js hold the key (from .env into process memory).
-  The server ONLY serves files inside public/ — server.js, src/ and
-  .env return 404 and can never be downloaded.
-- public/index.html contains ZERO secrets. Its only AI call is
-  fetch("/api/chat") on the same server (plus the documented public
-  APIs: your Supabase project, Paystack popup, Google Fonts,
-  BigDataCloud reverse-geocode).
-- The assistant's instructions live in src/persona.js on the server —
-  visitors cannot read or override them. The server also allowlists the
-  trade (plumbing..hvac) before answering.
-- Hardening: per-IP rate limiting (30 AI chats/min), body-size caps
-  (64 KB), strict message validation (12 turns max, 2000 chars each),
-  security headers, generic browser errors with details in your
-  terminal only.
-- Proof: npm test runs security smoke tests that fail the build if
-  any secret reference ever appears in public/.
+Create a GitHub repository and push this project to its `main` branch. Do not
+commit `.env` or paste any private API key into a source file.
 
-Project layout:
+### 2. Deploy the API to Render
 
-  fixhub-secure/
-    server.js            # thin entry point: routing + listen
-    src/
-      config.js          # .env loading + validation (key lives here)
-      persona.js         # assistant instructions (server-side)
-      ai.js              # Groq client (key attached here only)
-      chat.js            # POST /api/chat: validate -> Groq -> answer
-      rateLimit.js       # per-IP sliding-window limiter
-      static.js          # traversal-safe static serving + headers
-    public/              # EVERYTHING the browser may download
-      index.html         # markup + views (loads the files below)
-      styles.css         # all hand-written CSS (no frameworks)
-      app.js             # PART 4: config, data, backend, router, home
-      flows.js           # PART 5: booking, tracking, pay, history, AI chat
-      config.js          # PUBLIC keys only (Supabase anon + Paystack public)
-    test/
-      security.test.js   # npm test — proves the split holds
-    .env.example         # copy to .env, fill in your Groq key
-    package.json / README.md
+Create a Render Blueprint Instance from the GitHub repository so Render can
+read the included `render.yaml` and create the Web Service. Set these
+environment variables when prompted:
 
-Setup (3 minutes):
+- `GROQ_API_KEY`: a newly issued Groq API key (keep it in Render's environment
+  settings; never put it in GitHub or the frontend).
+- `FRONTEND_ORIGIN`: `https://<github-owner>.github.io` (the site origin only,
+  without the repository path or trailing slash).
 
-  cd fixhub-secure
-  cp .env.example .env        # Windows: copy .env.example .env
-  # edit .env and paste your Groq key into GROQ_API_KEY
-  # edit public/config.js: paste Supabase URL + anon key + Paystack PUBLIC key
-  node server.js
-  # open http://localhost:8000
+Render provides an HTTPS service URL after deployment. Confirm that its
+`/api/health` endpoint responds successfully.
 
-Needs Node.js 18+ (node -v). Zero dependencies — npm install is not
-required. Run npm test any time to re-verify the split. GET /api/health
-shows whether Server AI is configured (never the key).
+### 3. Configure GitHub Pages
 
-Google sign-in setup:
+In the repository settings, choose **Pages → Build and deployment → GitHub
+Actions**. Add a repository Actions variable named `BACKEND_URL` with the
+Render service's HTTPS origin (for example, `https://fixhub-api.onrender.com`,
+with no path).
 
-1. Enable Google under Supabase Authentication → Providers and enter the
-   OAuth client ID and secret from Google Cloud.
-2. In Google Cloud, set the authorized redirect URI to the callback URL shown
-   by Supabase for your project (usually
-   https://<project-ref>.supabase.co/auth/v1/callback).
-3. In Supabase Authentication → URL Configuration, allow the app's origin
-   (http://localhost:8000 for local development and your production origin
-   when deployed). The app returns to its current page after sign-in.
-4. Confirm the Supabase URL and publishable/anon key in public/config.js are
-   for that same project.
+The workflow in `.github/workflows/deploy-pages.yml` builds the deployment
+configuration and publishes only `public/`. Pushes to `main` deploy
+automatically. The browser sends AI chat requests to the configured Render
+service; it never receives the Groq key.
 
-Without a Groq key the app still runs: /api/chat answers 503 and the
-chat falls back to built-in keyword triage on the phone.
+The published URL is typically
+`https://<github-owner>.github.io/<repository-name>/`. Add that URL to the
+allowed redirect URLs in Supabase Authentication. The `FRONTEND_ORIGIN` value
+is only the origin (`https://<github-owner>.github.io`), not this full URL.
 
-Deploying (VPS, Render, Railway…):
+## Local checks
 
-1. Upload everything EXCEPT .env (it is git-ignored).
-2. Set GROQ_API_KEY in the host dashboard (plus GROQ_MODEL, PORT if changed).
-   Fill public/config.js with your public Supabase/Paystack values.
-3. Run node server.js (or npm start). Put HTTPS in front (host TLS).
+- Requires Node.js 18 or newer.
+- `npm test` runs the security smoke tests.
+- `npm start` starts the API for development. Set `GROQ_API_KEY` in a local
+  `.env` file or in the process environment; `.env` is ignored by Git.
 
-Rotating a leaked key: revoke it at console.groq.com, put the new one in
-.env (or the host dashboard), restart. Nothing in the frontend changes.
-
-Relation to the Perchance preview: the Perchance generator (index.html +
-main.pjs at the project root) calls Groq directly from the browser with a
-key pasted in main.pjs — the only way a pure client-side preview can reach
-Groq, and anyone can copy that key. Treat the preview key as disposable
-(dedicated key, tight limits) and run THIS secure package for real use.
+The frontend's Supabase URL/anon key and Paystack public key are intentionally
+public and live in `public/config.js`. Never put private credentials there.
+The backend serves only `public/`; server source, private configuration, and
+`.env` are not served.

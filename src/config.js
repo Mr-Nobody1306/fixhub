@@ -28,6 +28,7 @@ function loadConfig() {
     groqBaseUrl: String(process.env.GROQ_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/+$/, ""),
     groqModel: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
     groqKey: process.env.GROQ_API_KEY || "",
+    frontendOrigin: String(process.env.FRONTEND_ORIGIN || "").replace(/\/+$/, ""),
     rootDir: ROOT_DIR,
     publicDir: path.join(ROOT_DIR, "public"),
     maxBodyBytes: 64 * 1024,
@@ -40,6 +41,14 @@ function loadConfig() {
   const httpsRe = new RegExp("^https://");
   if (!httpsRe.test(cfg.groqBaseUrl)) throw new Error("[config] GROQ_BASE_URL must start with https://");
   if (!cfg.groqModel) throw new Error("[config] GROQ_MODEL must not be empty");
+  if (cfg.frontendOrigin) {
+    let origin;
+    try { origin = new URL(cfg.frontendOrigin); }
+    catch (err) { throw new Error("[config] FRONTEND_ORIGIN must be a valid HTTPS origin"); }
+    if (origin.protocol !== "https:" || origin.origin !== cfg.frontendOrigin || origin.pathname !== "/") {
+      throw new Error("[config] FRONTEND_ORIGIN must be an HTTPS origin without a path");
+    }
+  }
   return Object.freeze(cfg);
 }
 module.exports = loadConfig();

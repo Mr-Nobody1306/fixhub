@@ -15,6 +15,25 @@ function onRequest(req, res) {
   });
   let pathname = "/";
   try { pathname = new URL(req.url || "/", "http://x").pathname; } catch (e) {}
+  if (pathname.startsWith("/api/")) {
+    const origin = req.headers.origin;
+    if (config.frontendOrigin && origin && origin !== config.frontendOrigin) {
+      return sendJson(res, 403, { error: "Origin not allowed." });
+    }
+    if (config.frontendOrigin && origin === config.frontendOrigin) {
+      res.setHeader("Access-Control-Allow-Origin", config.frontendOrigin);
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+      res.setHeader("Vary", "Origin");
+    }
+    if (req.method === "OPTIONS") {
+      if (!config.frontendOrigin || origin !== config.frontendOrigin) {
+        return sendJson(res, 403, { error: "Origin not allowed." });
+      }
+      res.writeHead(204);
+      return res.end();
+    }
+  }
   if (req.method === "GET" && pathname === "/api/health") {
     return sendJson(res, 200, { ok: true, model: config.groqModel, aiConfigured: config.groqKey.length > 0 });
   }
@@ -33,6 +52,6 @@ function onRequest(req, res) {
 }
 const server = http.createServer(onRequest);
 server.listen(config.port, () => {
-  console.log("FixHub secure server on http://localhost:" + config.port);
+  console.log("FixHub secure server listening on port " + config.port);
   console.log("AI model: " + config.groqModel + " | Key: " + (config.groqKey ? "set" : "MISSING — /api/chat will 503 until .env has GROQ_API_KEY"));
 });

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: fixhub-api
+    runtime: node
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
